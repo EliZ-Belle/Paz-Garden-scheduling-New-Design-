@@ -8,7 +8,7 @@ export const analyzeRequest = async (userPrompt: string, clients: any[]) => {
   }
 
   try {
-    const model = "gemini-2.5-flash-latest"; // Using the fast model for UI responsiveness
+    const model = "gemini-3-flash-preview"; // Using the recommended flash model for Basic Text Tasks
     
     // Minimal context to save tokens, real app would hydrate more
     const clientList = clients.map(c => `${c.name} (ID: ${c.id}, Area: ${c.area})`).join(', ');
