@@ -1,9 +1,13 @@
-import { addDays, format, getDay, parseISO, differenceInDays } from 'date-fns';
+import { addDays, format, getDay, differenceInDays } from 'date-fns';
 import { RecurringPlan, Appointment, WasteScheduleRule, SchedulingSuggestion, WastePreference } from '../types';
 
 /**
  * Core Logic for Smart Scheduling
  */
+
+const parseDate = (dateStr: string) => {
+  return new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`);
+};
 
 // 1. Check if a specific date is a waste pickup day for a given area
 export const isWastePickupDay = (date: Date, area: string, rules: WasteScheduleRule[]): boolean => {
@@ -13,7 +17,7 @@ export const isWastePickupDay = (date: Date, area: string, rules: WasteScheduleR
 
 // 2. Calculate the "Ideal" next visit date based on history and seasonality
 export const calculateTargetDate = (plan: RecurringPlan): Date => {
-  const lastVisit = parseISO(plan.lastVisitDate);
+  const lastVisit = parseDate(plan.lastVisitDate);
   const month = lastVisit.getMonth(); // 0-11
   
   // Apply seasonal adjustment if exists

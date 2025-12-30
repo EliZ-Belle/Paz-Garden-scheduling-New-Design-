@@ -3,7 +3,7 @@ import { Appointment, Client, AppointmentType, WasteScheduleRule } from '../type
 import { isWastePickupDay } from '../services/schedulerEngine';
 import { isValidPhone, isTimeRangeValid, checkOverlap } from '../services/validation';
 import { X, Upload, AlertCircle, Calendar, Check, Trash2, User, Phone, MapPin } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 
 interface Props {
   isOpen: boolean;
@@ -15,6 +15,10 @@ interface Props {
   wasteRules: WasteScheduleRule[];
   existingAppointments: Appointment[];
 }
+
+const parseDate = (dateStr: string) => {
+  return new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`);
+};
 
 const AppointmentFormModal: React.FC<Props> = ({ 
   isOpen, onClose, onSubmit, onDelete, initialData, clients, wasteRules, existingAppointments 
@@ -51,7 +55,7 @@ const AppointmentFormModal: React.FC<Props> = ({
       area = newClientArea;
     }
     
-    const isWaste = isWastePickupDay(parseISO(date), area, wasteRules);
+    const isWaste = isWastePickupDay(parseDate(date), area, wasteRules);
     setIsWastePickup(isWaste);
   }, [date, clientId, isNewClient, newClientArea, clients, wasteRules, initialData]);
 

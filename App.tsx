@@ -7,12 +7,24 @@ import ClientList from './components/ClientList';
 import ClientProfile from './components/ClientProfile';
 // Removed MOCK_APPOINTMENTS import
 import { Appointment, AppointmentType, Client, DensityMode, RecurringPlan, WasteScheduleRule } from './types';
-import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, parseISO } from 'date-fns';
+import { format, addDays, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns';
 import { he } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, Filter, MessageSquare, Send, X, PlusCircle, Calendar, Sparkles, Coffee, Loader2 } from 'lucide-react';
 import { isWastePickupDay } from './services/schedulerEngine';
 import { analyzeRequest } from './services/geminiService';
 import { fetchInitialData, createAppointment, createClient, deleteAppointment, updateAppointment, deleteClient } from './services/dataService';
+
+const parseDate = (dateStr: string) => {
+  return new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`);
+};
+
+const getStartOfWeek = (date: Date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day;
+  d.setDate(diff);
+  return d;
+};
 
 const App = () => {
   // --- Global State ---
@@ -190,7 +202,7 @@ const App = () => {
       endTime: format(new Date(0,0,0, parseInt(time.split(':')[0]) + 1), 'HH:mm'), 
       type: AppointmentType.RECURRING,
       price: 0, 
-      isWastePickupDay: isWastePickupDay(parseISO(date), selectedClientForScheduler.area, wasteSchedule),
+      isWastePickupDay: isWastePickupDay(parseDate(date), selectedClientForScheduler.area, wasteSchedule),
       status: 'scheduled',
       instructions: 'נוצר ע"י תזמון חכם'
     };
@@ -297,7 +309,7 @@ const App = () => {
         );
      } else {
         // Weekly View
-        const start = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday start
+        const start = getStartOfWeek(currentDate); // Sunday start
         const end = endOfWeek(currentDate, { weekStartsOn: 0 });
         const days = eachDayOfInterval({ start, end });
 
@@ -311,7 +323,7 @@ const App = () => {
                     return (
                         <div key={dayStr} className={`min-h-[420px] border rounded-3xl p-4 flex flex-col gap-4 transition-all duration-300 snap-center shadow-organic ${isToday ? 'bg-primary/5 border-primary/50 ring-1 ring-primary/20' : 'bg-surface border-border/60 hover:border-primary/20'}`}>
                             <div className="flex flex-col items-center pb-3 border-b border-border/50">
-                                <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest opacity-80">{format(day, 'EEEE', { locale: he })}</span>
+                                <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest">{format(day, 'EEEE', { locale: he })}</span>
                                 <div className={`w-9 h-9 flex items-center justify-center rounded-full mt-1.5 text-sm font-bold transition-all ${isToday ? 'bg-primary text-white scale-110 shadow-lg shadow-primary/30' : 'text-text-main'}`}>
                                     {format(day, 'd')}
                                 </div>
@@ -362,7 +374,7 @@ const App = () => {
                  <div className="px-2 md:px-8 font-bold text-text-main text-xl md:text-2xl text-center tracking-tight leading-none">
                     {viewMode === 'daily' 
                         ? format(currentDate, 'd MMMM', { locale: he }) 
-                        : `שבוע ${format(startOfWeek(currentDate), 'd.MM', { locale: he })}`
+                        : `שבוע ${format(getStartOfWeek(currentDate), 'd.MM', { locale: he })}`
                     }
                     {viewMode === 'daily' && <span className="text-sm md:text-lg font-medium text-text-muted mr-2 opacity-60">{format(currentDate, 'yyyy')}</span>}
                  </div>

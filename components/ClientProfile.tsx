@@ -1,6 +1,6 @@
 import React from 'react';
 import { Client, Appointment, RecurringPlan } from '../types';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { he } from 'date-fns/locale';
 import { ArrowRight, Phone, MapPin, Clock, Edit2, Calendar, Recycle, Leaf, Trash2 } from 'lucide-react';
 
@@ -13,6 +13,10 @@ interface Props {
   onDeleteClient: (id: string) => void;
   density: 'comfortable' | 'compact';
 }
+
+const parseDate = (dateStr: string) => {
+  return new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`);
+};
 
 const ClientProfile: React.FC<Props> = ({ client, plan, history, onBack, onEditAppt, onDeleteClient, density }) => {
   const isComfortable = density === 'comfortable';
@@ -111,7 +115,7 @@ const ClientProfile: React.FC<Props> = ({ client, plan, history, onBack, onEditA
                            <div className="p-4 bg-surfaceHighlight rounded-2xl border border-border/60">
                                <p className="text-[10px] text-text-muted font-bold uppercase mb-1.5 opacity-70">ביקור אחרון</p>
                                <p className="text-sm font-bold text-text-main truncate">
-                                   {format(parseISO(plan.lastVisitDate), 'd.MM.yyyy')}
+                                   {format(parseDate(plan.lastVisitDate), 'd.MM.yyyy')}
                                </p>
                            </div>
                        </div>
@@ -157,8 +161,8 @@ const ClientProfile: React.FC<Props> = ({ client, plan, history, onBack, onEditA
                             >
                                 <div className="flex items-start gap-5">
                                     <div className="flex flex-col items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-surfaceHighlight group-hover:bg-white dark:group-hover:bg-bg-primary rounded-2xl border border-border transition-all duration-300 group-hover:scale-105 group-hover:shadow-sm">
-                                        <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{format(parseISO(appt.date), 'MMM', { locale: he })}</span>
-                                        <span className="text-xl md:text-2xl font-black text-text-main leading-none mt-0.5">{format(parseISO(appt.date), 'dd')}</span>
+                                        <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{format(parseDate(appt.date), 'MMM', { locale: he })}</span>
+                                        <span className="text-xl md:text-2xl font-black text-text-main leading-none mt-0.5">{format(parseDate(appt.date), 'dd')}</span>
                                     </div>
                                     <div className="pt-0.5">
                                         <div className="flex items-center gap-2 text-text-muted text-xs font-mono mb-2 opacity-80">

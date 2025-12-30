@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Client, RecurringPlan, Appointment, WasteScheduleRule, SchedulingSuggestion } from '../types';
 import { generateSuggestions } from '../services/schedulerEngine';
 import { Calendar, Check, AlertTriangle, X } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { he } from 'date-fns/locale';
 
 interface Props {
@@ -13,6 +13,10 @@ interface Props {
   onClose: () => void;
   onConfirm: (date: string, time: string) => void;
 }
+
+const parseDate = (dateStr: string) => {
+  return new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`);
+};
 
 const SmartSchedulerModal: React.FC<Props> = ({ client, plan, wasteRules, existingAppointments, onClose, onConfirm }) => {
   const [suggestions] = useState<SchedulingSuggestion[]>(() => 
@@ -41,7 +45,7 @@ const SmartSchedulerModal: React.FC<Props> = ({ client, plan, wasteRules, existi
 
         <div className="p-5 space-y-5">
           <div className="text-sm text-text-muted mb-2 font-medium">
-            ביקור אחרון: {format(parseISO(plan.lastVisitDate), 'd MMM yyyy', { locale: he })} (תדירות: {plan.baseIntervalDays} יום)
+            ביקור אחרון: {format(parseDate(plan.lastVisitDate), 'd MMM yyyy', { locale: he })} (תדירות: {plan.baseIntervalDays} יום)
           </div>
 
           <div className="space-y-3">
@@ -57,7 +61,7 @@ const SmartSchedulerModal: React.FC<Props> = ({ client, plan, wasteRules, existi
               >
                 <div className="flex justify-between items-center mb-1">
                   <span className="font-bold text-text-main">
-                    {format(parseISO(s.date), 'EEEE, d MMM', { locale: he })}
+                    {format(parseDate(s.date), 'EEEE, d MMM', { locale: he })}
                   </span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.score > 80 ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'}`}>
                     ציון: {s.score}
