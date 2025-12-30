@@ -1,0 +1,8 @@
+{
+  "name": "Paz Gardens Scheduler new design ",
+  "description": "AI-powered scheduling application for gardening services featuring smart recurring visit logic, waste pickup awareness, and natural language dispatching.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
